@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using IsqEventos.Application.Contratos;
 using IsqEventos.Domain;
 using IsqEventos.Persistencia.Contatos;
+using IsqEventos.Application.Dtos;
 
 namespace IsqEventos.Application
 {
@@ -13,21 +15,32 @@ namespace IsqEventos.Application
 
         private readonly IGeralPersistencia _geralPersistencia;
         private readonly IEventosPersistencia _eventosPersistencia;
-        public EventoService(IGeralPersistencia geralPersiste, IEventosPersistencia eventosPersiste)
+
+        private readonly IMapper _mapper;
+
+        public EventoService(IGeralPersistencia geralPersiste,
+                            IEventosPersistencia eventosPersiste,
+                            IMapper mapper)
         {
             _geralPersistencia = geralPersiste;
             _eventosPersistencia = eventosPersiste;
+            _mapper = mapper;
         }
 
 
-        public async Task<Evento> addEventos(Evento model)
+        public async Task<EventoDto> addEventos(EventoDto model)
         {
+
             try
             {
-                _geralPersistencia.Add<Evento>(model);
+                var evento = _mapper.Map<Evento>(model);
+
+
+                _geralPersistencia.Add<Evento>(evento);
                 if (await _geralPersistencia.SaveChangesAsync())
                 {
-                    return await _eventosPersistencia.GetEventoByIdAsync(model.Id, false);
+                    var eventoRetorno = await _eventosPersistencia.GetEventoByIdAsync(evento.Id, false);
+                    return _mapper.Map<EventoDto>(eventoRetorno);
                 }
                 return null;
 
@@ -40,8 +53,9 @@ namespace IsqEventos.Application
         }
 
 
-        public async Task<Evento> UpdateEvento(int eventoId, Evento model)
+        public async Task<EventoDto> UpdateEvento(int eventoId, EventoDto model)
         {
+
             try
             {
                 var evento = await _eventosPersistencia.GetEventoByIdAsync(eventoId, false);
@@ -49,10 +63,13 @@ namespace IsqEventos.Application
 
                 model.Id = evento.Id;
 
-                _geralPersistencia.Update(model);
+                _mapper.Map(model, evento);
+
+                _geralPersistencia.Update<Evento>(evento);
                 if (await _geralPersistencia.SaveChangesAsync())
                 {
-                    return await _eventosPersistencia.GetEventoByIdAsync(model.Id, false);
+                    var eventoRetorno = await _eventosPersistencia.GetEventoByIdAsync(evento.Id, false);
+                    return _mapper.Map<EventoDto>(eventoRetorno);
                 }
                 return null;
 
@@ -92,14 +109,16 @@ namespace IsqEventos.Application
         }
 
 
-        public async Task<Evento[]> GetAllEventosAsync(bool includePalestrantes = false)
+        public async Task<EventoDto[]> GetAllEventosAsync(bool includePalestrantes = false)
         {
             try
             {
                 var eventos = await _eventosPersistencia.GetAllEventosAsync(includePalestrantes);
                 if (eventos == null) return null;
 
-                return eventos;
+                var resultado = _mapper.Map<EventoDto[]>(eventos);
+
+                return resultado;
             }
             catch (Exception ex)
             {
@@ -108,14 +127,16 @@ namespace IsqEventos.Application
             }
         }
 
-        public async Task<Evento[]> GetAllEventosByTemaAsync(string tema, bool includePalestrantes = false)
+        public async Task<EventoDto[]> GetAllEventosByTemaAsync(string tema, bool includePalestrantes = false)
         {
             try
             {
                 var eventos = await _eventosPersistencia.GetAllEventosByTemaAsync(tema, includePalestrantes);
                 if (eventos == null) return null;
 
-                return eventos;
+                var resultado = _mapper.Map<EventoDto[]>(eventos);
+
+                return resultado;
             }
             catch (Exception ex)
             {
@@ -124,14 +145,16 @@ namespace IsqEventos.Application
             }
         }
 
-        public async Task<Evento> GetEventoByIdAsync(int eventoId, bool includePalestrantes = false)
+        public async Task<EventoDto> GetEventoByIdAsync(int eventoId, bool includePalestrantes = false)
         {
             try
             {
-                var eventos = await _eventosPersistencia.GetEventoByIdAsync(eventoId, includePalestrantes);
-                if (eventos == null) return null;
+                var evento = await _eventosPersistencia.GetEventoByIdAsync(eventoId, includePalestrantes);
+                if (evento == null) return null;
 
-                return eventos;
+                var resultado = _mapper.Map<EventoDto>(evento);
+
+                return resultado;
             }
             catch (Exception ex)
             {

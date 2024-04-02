@@ -1,4 +1,6 @@
 
+using AutoMapper;
+using System;
 using IsqEventos.Application;
 using IsqEventos.Application.Contratos;
 using IsqEventos.Persistencia;
@@ -45,10 +47,13 @@ namespace IsqEventosAPI
              .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling =
                         Newtonsoft.Json.ReferenceLoopHandling.Ignore
                     );
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddScoped<IEventosPersistencia, EventosPersiste>();
             services.AddScoped<IEventosService, EventoService>();
             services.AddScoped<IGeralPersistencia, GeralPersiste>();
             services.AddScoped<IPalestrantesPersistencia, PalestrantePersiste>();
+
             services.AddCors();
             services.AddSwaggerGen(c =>
             {

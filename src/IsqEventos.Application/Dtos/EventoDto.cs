@@ -38,9 +38,9 @@ namespace IsqEventos.Application.Dtos
         [EmailAddress(ErrorMessage = "É necessário ser um {0} válido")]
         public string Email { get; set; }
 
-        public IEnumerable<LoteDto> Lotes { get; set; }
+        public IEnumerable<LoteDto>? Lotes { get; set; }
 
-        public IEnumerable<RedeSocialDto> RedesSociais { get; set; }
+        public IEnumerable<RedeSocialDto>? RedesSociais { get; set; }
 
         public IEnumerable<PalestranteDto>? Palestrantes { get; set; }
 

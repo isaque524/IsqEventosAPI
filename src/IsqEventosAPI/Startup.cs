@@ -49,9 +49,12 @@ namespace IsqEventosAPI
                     );
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddScoped<IEventosPersistencia, EventosPersiste>();
             services.AddScoped<IEventosService, EventoService>();
+            services.AddScoped<ILotesService, LoteService>();
+
             services.AddScoped<IGeralPersistencia, GeralPersiste>();
+            services.AddScoped<IEventosPersistencia, EventoPersiste>();
+            services.AddScoped<ILotePersistencia, LotePersiste>();
             services.AddScoped<IPalestrantesPersistencia, PalestrantePersiste>();
 
             services.AddCors();

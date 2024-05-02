@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IsqEventos.Persistencia
 {
-    public class EventosPersiste : IEventosPersistencia
+    public class EventoPersiste : IEventosPersistencia
     {
 
         private readonly IsqEventosContext _context;
 
-        public EventosPersiste(IsqEventosContext context)
+        public EventoPersiste(IsqEventosContext context)
         {
             _context = context;
         }

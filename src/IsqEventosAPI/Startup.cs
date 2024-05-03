@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http;
 
 namespace IsqEventosAPI
 
@@ -83,9 +85,14 @@ namespace IsqEventosAPI
             app.UseAuthorization();
 
             app.UseCors(x => x.AllowAnyHeader()
-                              .AllowAnyMethod()
-                              .AllowAnyOrigin()
-            );
+                               .AllowAnyMethod()
+                               .AllowAnyOrigin());
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
+                RequestPath = new PathString("/Resources")
+            });
 
             app.UseEndpoints(endpoints =>
             {

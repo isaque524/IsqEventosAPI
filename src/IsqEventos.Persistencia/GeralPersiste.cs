@@ -1,6 +1,6 @@
 
-using IsqEventos.Persistencia.Contatos;
 using IsqEventos.Persistencia.contextos;
+using IsqEventos.Persistencia.Contratos;
 
 
 namespace IsqEventos.Persistencia

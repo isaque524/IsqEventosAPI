@@ -1,7 +1,7 @@
 
 using IsqEventos.Domain;
-using IsqEventos.Persistencia.Contatos;
 using IsqEventos.Persistencia.contextos;
+using IsqEventos.Persistencia.Contratos;
 using Microsoft.EntityFrameworkCore;
 
 namespace IsqEventos.Persistencia

@@ -14,7 +14,7 @@ namespace IsqEventos.Application.Dtos
 
         public string MiniCurriculo { get; set; }
 
-        public string ImagemURL { get; set; }
+        public string? ImagemURL { get; set; }
 
         public string Telefone { get; set; }
 

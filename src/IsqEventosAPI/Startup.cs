@@ -4,8 +4,8 @@ using System;
 using IsqEventos.Application;
 using IsqEventos.Application.Contratos;
 using IsqEventos.Persistencia;
-using IsqEventos.Persistencia.Contatos;
 using IsqEventos.Persistencia.contextos;
+using IsqEventos.Persistencia.Contratos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +16,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
+using IsqEventos.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 namespace IsqEventosAPI
 
@@ -29,24 +36,42 @@ namespace IsqEventosAPI
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<IsqEventosContext>(options =>
+
+            services.AddDbContext<IsqEventosContext>(
+                 context => context.UseSqlite(Configuration.GetConnectionString("Default"))
+             );
+
+            services.AddIdentityCore<User>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("Default"),
-                    sqlServerOptionsAction: sqlOptions =>
-                    {
-                        sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 5, // N�mero m�ximo de tentativas
-                            maxRetryDelay: TimeSpan.FromSeconds(30), // Atraso m�ximo entre tentativas
-                            errorNumbersToAdd: null // Adicionar n�meros de erro personalizados, se necess�rio
-                        );
-                    });
-            });
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 4;
+            })
+            .AddRoles<Role>().AddRoleManager<RoleManager<Role>>().AddSignInManager<SignInManager<User>>()
+            .AddRoleValidator<RoleValidator<Role>>().AddEntityFrameworkStores<IsqEventosContext>().AddDefaultTokenProviders();
+
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            }
+            );
+
+
 
             services.AddControllers()
-             .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling =
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+             .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling =
                         Newtonsoft.Json.ReferenceLoopHandling.Ignore
                     );
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -59,10 +84,41 @@ namespace IsqEventosAPI
             services.AddScoped<ILotePersistencia, LotePersiste>();
             services.AddScoped<IPalestrantesPersistencia, PalestrantePersiste>();
 
+            services.AddScoped<IUserPersistencia, UserPersiste>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAccountService, AccountService>();
+
             services.AddCors();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "IsqEventos.API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "IsqEventos.API", Version = "v1" });
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header usando Bearer.
+                                Entre com 'Bearer ' [espaço] então coloque seu token.
+                                Exemplo: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
             });
         }
 
@@ -82,6 +138,7 @@ namespace IsqEventosAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors(x => x.AllowAnyHeader()

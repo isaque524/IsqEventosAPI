@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using IsqEventos.Application.Contratos;
 using IsqEventos.Domain;
-using IsqEventos.Persistencia.Contatos;
 using IsqEventos.Application.Dtos;
+using IsqEventos.Persistencia.Contratos;
 
 namespace IsqEventos.Application
 {

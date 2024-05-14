@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using IsqEventos.Application.Dtos;
 using IsqEventos.Domain;
+using IsqEventos.Domain.Identity;
 
 
 namespace IsqEventos.Application.Helpers
@@ -17,6 +18,10 @@ namespace IsqEventos.Application.Helpers
             CreateMap<Lote, LoteDto>().ReverseMap();
             CreateMap<Palestrante, PalestranteDto>().ReverseMap();
             CreateMap<RedeSocial, RedeSocialDto>().ReverseMap();
+
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserLoginDto>().ReverseMap();
+            CreateMap<User, UserUpdateDto>().ReverseMap();
         }
 
     }

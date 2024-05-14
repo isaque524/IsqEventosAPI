@@ -13,11 +13,11 @@ namespace IsqEventos.Application.Dtos
 
         public string URL { get; set; }
 
-        public int? EventoId { get; set; }
+        public int EventoId { get; set; }
 
         public EventoDto Eventos { get; set; }
 
-        public int? PalestranteId { get; set; }
+        public int PalestranteId { get; set; }
 
         public PalestranteDto Palestrantes { get; set; }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IsqEventos.Domain;
 
-namespace IsqEventos.Persistencia.Contatos
+namespace IsqEventos.Persistencia.Contratos
 {
     public interface IGeralPersistencia
     {

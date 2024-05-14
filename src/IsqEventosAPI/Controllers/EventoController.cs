@@ -5,12 +5,14 @@ using IsqEventos.Persistencia.contextos;
 using IsqEventos.Application.Contratos;
 using Microsoft.AspNetCore.Http;
 using IsqEventos.Application.Dtos;
+using IsqEventosAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 
 
 
 namespace IsqEventosAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class EventoController : ControllerBase
@@ -19,13 +21,13 @@ public class EventoController : ControllerBase
 
     private readonly IEventosService _eventosService;
     private readonly IWebHostEnvironment _hostEnvironment;
+    private readonly IAccountService _accountService;
 
-    public EventoController(IEventosService eventosService, IWebHostEnvironment hostEnvironment)
+    public EventoController(IEventosService eventosService, IWebHostEnvironment hostEnvironment, IAccountService accountService)
     {
         _eventosService = eventosService;
         _hostEnvironment = hostEnvironment;
-
-
+        _accountService = accountService;
     }
 
 
@@ -35,7 +37,7 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var eventos = await _eventosService.GetAllEventosAsync(true);
+            var eventos = await _eventosService.GetAllEventosAsync(User.GetUserId(), true);
             if (eventos == null) return NoContent();
 
 
@@ -55,7 +57,7 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var eventos = await _eventosService.GetEventoByIdAsync(id, true);
+            var eventos = await _eventosService.GetEventoByIdAsync(User.GetUserId(), id, true);
             if (eventos == null) return NoContent();
 
             return Ok(eventos);
@@ -74,7 +76,7 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var eventos = await _eventosService.GetAllEventosByTemaAsync(tema, true);
+            var eventos = await _eventosService.GetAllEventosByTemaAsync(User.GetUserId(), tema, true);
             if (eventos == null) return NoContent();
 
 
@@ -94,7 +96,7 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var evento = await _eventosService.GetEventoByIdAsync(eventoId, true);
+            var evento = await _eventosService.GetEventoByIdAsync(User.GetUserId(), eventoId, true);
             if (evento == null) return NoContent();
 
             var file = Request.Form.Files[0];
@@ -103,7 +105,7 @@ public class EventoController : ControllerBase
                 DeleteImage(evento.ImagemURL);
                 evento.ImagemURL = await SaveImage(file);
             }
-            var eventoRetorno = await _eventosService.UpdateEvento(eventoId, evento);
+            var eventoRetorno = await _eventosService.UpdateEvento(User.GetUserId(), eventoId, evento);
 
             return Ok(eventoRetorno);
         }
@@ -121,7 +123,7 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var eventos = await _eventosService.addEventos(model);
+            var eventos = await _eventosService.addEventos(User.GetUserId(), model);
             if (eventos == null) return NoContent();
 
             return Ok(eventos);
@@ -139,7 +141,7 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var eventos = await _eventosService.UpdateEvento(id, model);
+            var eventos = await _eventosService.UpdateEvento(User.GetUserId(), id, model);
             if (eventos == null) return NoContent();
 
             return Ok(eventos);
@@ -157,17 +159,17 @@ public class EventoController : ControllerBase
     {
         try
         {
-            var evento = await _eventosService.GetEventoByIdAsync(id, true);
+            var evento = await _eventosService.GetEventoByIdAsync(User.GetUserId(), id, true);
             if (evento == null) return NoContent();
 
-            if (await _eventosService.DeleteEvento(id))
+            if (await _eventosService.DeleteEvento(User.GetUserId(), id))
             {
                 DeleteImage(evento.ImagemURL);
                 return Ok(new { message = "Deletado" });
             }
             else
             {
-                throw new Exception("Ocorreu um problem não específico ao tentar deletar Evento.");
+                throw new Exception("Ocorreu um problema não específico ao tentar deletar Evento.");
             }
         }
         catch (Exception ex)

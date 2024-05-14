@@ -1,6 +1,6 @@
 using IsqEventos.Domain;
-using IsqEventos.Persistencia.Contatos;
 using IsqEventos.Persistencia.contextos;
+using IsqEventos.Persistencia.Contratos;
 using Microsoft.EntityFrameworkCore;
 
 namespace IsqEventos.Persistencia
@@ -46,7 +46,7 @@ namespace IsqEventos.Persistencia
             }
 
             query = query.AsNoTracking().OrderBy(p => p.Id)
-                        .Where(p => p.Nome.ToLower().Contains(nome.ToLower()));
+                        .Where(p => p.User.PrimeiroNome.ToLower().Contains(nome.ToLower()));
 
             return await query.ToArrayAsync();
         }

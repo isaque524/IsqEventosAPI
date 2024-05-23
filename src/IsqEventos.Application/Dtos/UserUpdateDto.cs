@@ -16,7 +16,7 @@ namespace IsqEventos.Application.Dtos
         public string PhoneNumber { get; set; }
         public string Funcao { get; set; }
         public string? Descricao { get; set; }
-        public string Password { get; set; }
+        public string? Password { get; set; }
         public string? Token { get; set; }
         public string? ImagemURL { get; set; }
     }

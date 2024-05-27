@@ -7,6 +7,7 @@ using IsqEventos.Application.Contratos;
 using IsqEventos.Domain;
 using IsqEventos.Application.Dtos;
 using IsqEventos.Persistencia.Contratos;
+using IsqEventos.Persistencia.Models;
 
 namespace IsqEventos.Application
 {
@@ -110,32 +111,23 @@ namespace IsqEventos.Application
         }
 
 
-        public async Task<EventoDto[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
+        public async Task<PageList<EventoDto>> GetAllEventosAsync(int userId, PageParams pageParams, bool includePalestrantes = false)
         {
             try
             {
-                var eventos = await _eventosPersistencia.GetAllEventosAsync(userId, includePalestrantes);
+                var eventos = await _eventosPersistencia.GetAllEventosAsync(userId, pageParams, includePalestrantes);
                 if (eventos == null) return null;
 
-                var resultado = _mapper.Map<EventoDto[]>(eventos);
+                var resultado = _mapper.Map<PageList<EventoDto>>(eventos);
 
-                return resultado;
-            }
-            catch (Exception ex)
-            {
+                resultado.CurrentPage = eventos.CurrentPage;
 
-                throw new Exception(ex.Message);
-            }
-        }
+                resultado.TotalPages = eventos.TotalPages;
 
-        public async Task<EventoDto[]> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
-        {
-            try
-            {
-                var eventos = await _eventosPersistencia.GetAllEventosByTemaAsync(userId, tema, includePalestrantes);
-                if (eventos == null) return null;
+                resultado.PageSize = eventos.PageSize;
 
-                var resultado = _mapper.Map<EventoDto[]>(eventos);
+                resultado.TotalCount = eventos.TotalCount;
+
 
                 return resultado;
             }

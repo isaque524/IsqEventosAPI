@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using IsqEventos.Application.Dtos;
 using IsqEventosAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using IsqEventos.Persistencia.Models;
 
 
 
@@ -33,15 +34,15 @@ public class EventoController : ControllerBase
 
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] PageParams pageParams)
     {
         try
         {
-            var eventos = await _eventosService.GetAllEventosAsync(User.GetUserId(), true);
+            var eventos = await _eventosService.GetAllEventosAsync(User.GetUserId(), pageParams, true);
             if (eventos == null) return NoContent();
 
 
-
+            Response.AddPagination(eventos.CurrentPage, eventos.PageSize, eventos.TotalCount, eventos.TotalPages);
 
             return Ok(eventos);
         }
@@ -70,25 +71,6 @@ public class EventoController : ControllerBase
 
     }
 
-
-    [HttpGet("{tema}/tema")]
-    public async Task<IActionResult> GetByTema(string tema)
-    {
-        try
-        {
-            var eventos = await _eventosService.GetAllEventosByTemaAsync(User.GetUserId(), tema, true);
-            if (eventos == null) return NoContent();
-
-
-            return Ok(eventos);
-        }
-        catch (Exception ex)
-        {
-
-            return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar recuperar os eventos. Erro: {ex.Message}");
-        }
-
-    }
 
 
     [HttpPost("upload-image/{eventoId}")]

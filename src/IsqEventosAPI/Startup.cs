@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using IsqEventosAPI.Helpers;
 
 
 namespace IsqEventosAPI
@@ -78,15 +79,22 @@ namespace IsqEventosAPI
 
             services.AddScoped<IEventosService, EventoService>();
             services.AddScoped<ILotesService, LoteService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IPalestranteService, PalestranteService>();
+            services.AddScoped<IRedeSocialService, RedeSocialService>();
+            services.AddScoped<IUtil, Util>();
+
+
 
             services.AddScoped<IGeralPersistencia, GeralPersiste>();
             services.AddScoped<IEventosPersistencia, EventoPersiste>();
             services.AddScoped<ILotePersistencia, LotePersiste>();
             services.AddScoped<IPalestrantesPersistencia, PalestrantePersiste>();
+            services.AddScoped<IRedeSocialPersistencia, RedeSocialPersiste>();
 
             services.AddScoped<IUserPersistencia, UserPersiste>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAccountService, AccountService>();
+
 
             services.AddCors();
             services.AddSwaggerGen(options =>

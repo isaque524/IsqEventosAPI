@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IsqEventos.Application.Contratos;
 using IsqEventos.Application.Dtos;
 using IsqEventosAPI.Extensions;
+using IsqEventosAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +19,15 @@ namespace IsqEventosAPI.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
+        private readonly IUtil _util;
 
-        public AccountController(IAccountService accountService, ITokenService tokenService)
+        private readonly string _destino = "Perfil";
+
+        public AccountController(IAccountService accountService, ITokenService tokenService, IUtil util)
         {
             _accountService = accountService;
             _tokenService = tokenService;
+            _util = util;
         }
 
         [HttpGet("GetUser")]
@@ -123,6 +128,33 @@ namespace IsqEventosAPI.Controllers
                 return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar atualizar Usuário. Erro: {ex.Message}");
             }
         }
+
+
+        [HttpPost("upload-image")]
+        public async Task<IActionResult> UploadImage()
+        {
+            try
+            {
+                var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
+                if (user == null) return NoContent();
+
+                var file = Request.Form.Files[0];
+                if (file.Length > 0)
+                {
+                    _util.DeleteImage(user.ImagemURL, _destino);
+                    user.ImagemURL = await _util.SaveImage(file, _destino);
+                }
+                var userRetorno = await _accountService.UpdateAccount(user);
+
+                return Ok(userRetorno);
+            }
+            catch (Exception ex)
+            {
+
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar realizar upload de foto do Perfil. Erro: {ex.Message}");
+            }
+        }
+
 
 
 

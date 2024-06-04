@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IsqEventos.Persistencia.Migrations
 {
-    public partial class AdicionandoIdentity : Migration
+    public partial class adicionandoIdentity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -172,7 +172,7 @@ namespace IsqEventos.Persistencia.Migrations
                     DataEvento = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Tema = table.Column<string>(type: "TEXT", nullable: false),
                     QtdPessoas = table.Column<int>(type: "INTEGER", nullable: false),
-                    ImagemURL = table.Column<string>(type: "TEXT", nullable: false),
+                    ImagemURL = table.Column<string>(type: "TEXT", nullable: true),
                     Telefone = table.Column<string>(type: "TEXT", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -194,7 +194,7 @@ namespace IsqEventos.Persistencia.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    MiniCurriculo = table.Column<string>(type: "TEXT", nullable: false),
+                    MiniCurriculo = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

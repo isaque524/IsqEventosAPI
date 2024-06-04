@@ -27,7 +27,7 @@ namespace IsqEventos.Application
         }
 
 
-        public async Task<PalestranteDto> AddPalestrantes(int userId, PalestranteAddDto model)
+    public async Task<PalestranteDto> AddPalestrantes(int userId, PalestranteAddDto model)
         {
             try
             {
@@ -50,62 +50,52 @@ namespace IsqEventos.Application
             }
         }
 
-
         public async Task<PalestranteDto> UpdatePalestrante(int userId, PalestranteUpdateDto model)
         {
-
             try
             {
-                var palestrante = await _palestrantesPersistencia.GetPalestranteByUserIdAsync(userId, false);
-                if (palestrante == null) return null;
+                var Palestrante = await _palestrantesPersistencia.GetPalestranteByUserIdAsync(userId, false);
+                if (Palestrante == null) return null;
 
-                model.Id = palestrante.Id;
+                model.Id = Palestrante.Id;
                 model.UserId = userId;
 
-                _mapper.Map(model, palestrante);
+                _mapper.Map(model, Palestrante);
 
-                _palestrantesPersistencia.Update<Palestrante>(palestrante);
+                _palestrantesPersistencia.Update<Palestrante>(Palestrante);
+
                 if (await _palestrantesPersistencia.SaveChangesAsync())
                 {
-                    var palestranteRetorno = await _palestrantesPersistencia.GetPalestranteByUserIdAsync(userId, false);
-                    return _mapper.Map<PalestranteDto>(palestranteRetorno);
+                    var PalestranteRetorno = await _palestrantesPersistencia.GetPalestranteByUserIdAsync(userId, false);
+
+                    return _mapper.Map<PalestranteDto>(PalestranteRetorno);
                 }
                 return null;
-
-
             }
             catch (Exception ex)
             {
-
                 throw new Exception(ex.Message);
             }
         }
-
-
 
         public async Task<PageList<PalestranteDto>> GetAllPalestrantesAsync(PageParams pageParams, bool includeEventos = false)
         {
             try
             {
-                var palestrante = await _palestrantesPersistencia.GetAllPalestrantesAsync(pageParams, includeEventos);
-                if (palestrante == null) return null;
+                var Palestrantes = await _palestrantesPersistencia.GetAllPalestrantesAsync(pageParams, includeEventos);
+                if (Palestrantes == null) return null;
 
-                var resultado = _mapper.Map<PageList<PalestranteDto>>(palestrante);
+                var resultado = _mapper.Map<PageList<PalestranteDto>>(Palestrantes);
 
-                resultado.CurrentPage = palestrante.CurrentPage;
-
-                resultado.TotalPages = palestrante.TotalPages;
-
-                resultado.PageSize = palestrante.PageSize;
-
-                resultado.TotalCount = palestrante.TotalCount;
-
+                resultado.CurrentPage = Palestrantes.CurrentPage;
+                resultado.TotalPages = Palestrantes.TotalPages;
+                resultado.PageSize = Palestrantes.PageSize;
+                resultado.TotalCount = Palestrantes.TotalCount;
 
                 return resultado;
             }
             catch (Exception ex)
             {
-
                 throw new Exception(ex.Message);
             }
         }
@@ -114,20 +104,17 @@ namespace IsqEventos.Application
         {
             try
             {
-                var palestrante = await _palestrantesPersistencia.GetPalestranteByUserIdAsync(userId, includeEventos);
-                if (palestrante == null) return null;
+                var Palestrante = await _palestrantesPersistencia.GetPalestranteByUserIdAsync(userId, includeEventos);
+                if (Palestrante == null) return null;
 
-                var resultado = _mapper.Map<PalestranteDto>(palestrante);
+                var resultado = _mapper.Map<PalestranteDto>(Palestrante);
 
                 return resultado;
             }
             catch (Exception ex)
             {
-
                 throw new Exception(ex.Message);
             }
         }
-
-
     }
 }

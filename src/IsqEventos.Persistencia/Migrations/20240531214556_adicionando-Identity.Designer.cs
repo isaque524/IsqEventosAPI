@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IsqEventos.Persistencia.Migrations
 {
     [DbContext(typeof(IsqEventosContext))]
-    [Migration("20240509162611_Adicionando-Identity")]
-    partial class AdicionandoIdentity
+    [Migration("20240531214556_adicionando-Identity")]
+    partial class adicionandoIdentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,7 +33,6 @@ namespace IsqEventos.Persistencia.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagemURL")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Local")
@@ -225,7 +224,6 @@ namespace IsqEventos.Persistencia.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MiniCurriculo")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")

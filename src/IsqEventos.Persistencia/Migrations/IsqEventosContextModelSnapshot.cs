@@ -31,7 +31,6 @@ namespace IsqEventos.Persistencia.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagemURL")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Local")
@@ -223,7 +222,6 @@ namespace IsqEventos.Persistencia.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MiniCurriculo")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
